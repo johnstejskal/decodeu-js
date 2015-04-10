@@ -3,6 +3,10 @@ $(document).ready(function(){
 console.log("Document ready!");
     
     
+    
+    var arrQuestions = ['Do you like to eat lollypops?','Do you think you are the best in the world', 'Working in the nude is awesome, do you agree?', 'This survey is the pretty spectacular yeah?'];
+    var currQuestionIndex = 0;
+    
     var isQuestionCompany = true;
     var questionProgress = 1;
     
@@ -97,67 +101,86 @@ console.log("Document ready!");
                                transform: 'rotate(' +itemMapping[itemNum - 1][2]+ 'deg)'})
        */
         
-        
-        
        
-        
-        var size = (baseProgressCurveMaxWidth/6) * itemNum;
-       // $("#curve-progress-you").animate({borderWidth : size, borderTopRightRadius: size});   
+        var size = (baseProgressCurveMaxWidth/6) * itemNum; 
        
         var answered = false;
         var targ;
-        if(!isQuestionCompany)
+        if(isQuestionCompany)
         {
-            currYouValue = itemNum;  
-            isQuestionCompany = true;  
-            answered = true;
-            targ = $("#curve-progress-you")
+            currCompanyValue = itemNum;  
+            isQuestionCompany = false;  
+            answered = false;
+            
+            $('.curveNavBacking').addClass('rotateCW90');
+            targ = $("#curve-progress-company");
+
+            $(".scoreTabCompany span").text(itemNum);
             $(".scoreTabCompany").animate({"right": "0"}) 
         }
         else
         {
-            currCompanyValue = itemNum;      
-            isQuestionCompany = false;       
-            targ = $("#curve-progress-company");
+            currYouValue = itemNum;  
+            isQuestionCompany = true;    
+            answered = true;
+            targ = $("#curve-progress-you")   
+            $(".scoreTabYou span").text(itemNum);
             $(".scoreTabYou").animate({"right": "0"}) 
         }
         
         
-        console.log("currCompanyValue:"+currCompanyValue);
-        console.log("currYouValue:"+currYouValue);
-        if(currCompanyValue > currYouValue)
+        if(currCompanyValue >= currYouValue)
         {
             $("#curve-progress-company").css('z-index', '0');    
             $("#curve-progress-you").css('z-index', '1');    
         }
-        else if(currYouValue > currCompanyValue)
+        else if(currYouValue >= currCompanyValue)
         {
             $("#curve-progress-company").css('z-index', '1');    
             $("#curve-progress-you").css('z-index', '0');    
         }    
         
          questionProgress ++;
-        targ.animate({borderWidth : size, borderTopRightRadius: size}, 500, function(){
+        targ.animate({borderWidth : size, borderTopRightRadius: size}, 200, function(){
         
          if(answered)
-          doNextQuestion();  
+             setTimeout(doNextQuestion, 500);  
         });   
         
-
-       
                           
     }
     
     
+    function addNewQuestion()
+    {
+      //TODO Get new Question copy
+      //
+      //
+        $(".questionContent p").text(arrQuestions[currQuestionIndex]);
+        currQuestionIndex ++;
+        
+      $(".questionContent").css({left: "100%"})   
+      $(".questionContent").animate({"left": "20%"}, 300, function(){
+        //question ready
+       })   
+    }
     
     function doNextQuestion()
     {
-        console.log("doNextQuestion")
-    
-       $(".questionContent").animate({"left": "-800px"}) 
+        
+       console.log("doNextQuestion")
+       $('.curveNavBacking').removeClass('rotateCW90');
+       
+        $("#curve-progress-you") .animate({borderWidth : 0, borderTopRightRadius: 0})
+        $("#curve-progress-company") .animate({borderWidth : 0, borderTopRightRadius: 0})
+                     
+       $(".questionContent").animate({"left": "-800px"}, 300, function(){
+        addNewQuestion();
+       }) 
+       
        $(".scoreTabYou").animate({"right": "-300px"}) 
        $(".scoreTabCompany").animate({"right": "-300px"}) 
-       $("#inner-wrapper").animate({"background-position": "100px"})  
+       $("#inner-wrapper").animate({"background-position": -(questionProgress * 10)+"px"})  
     }
           
     
